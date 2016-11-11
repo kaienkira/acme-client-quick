@@ -96,7 +96,8 @@ trap do_cleanup EXIT
 # get cert
 for domain in $domain_list
 do
-    domain_param="$domain_param;""$domain"
+    domain_param="$domain_param""$domain;"
+    domain_param=`printf "$domain_param" | sed 's/;$//g'`
 done
 php ${script_path}/acme-client.php \
     -a ${script_path}/cert/account.key \
