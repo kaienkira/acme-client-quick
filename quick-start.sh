@@ -19,6 +19,14 @@ then
 fi
 domain_list=`cat ${script_path}/domain.txt`
 
+# check 80 port
+exec 6<>/dev/tcp/localhost/80
+if [ $? -eq 0 ]
+then
+    echo "80 port is in use, please shutdown your system nginx first"
+    exit 1
+fi
+
 # search openssl.cnf
 openssl_cnf_file_list="
 /etc/ssl/openssl.cnf
