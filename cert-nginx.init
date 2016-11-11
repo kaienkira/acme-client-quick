@@ -1,0 +1,171 @@
+#!/bin/bash
+# description: cert-nginx
+
+script_name=`basename $0`
+script_abs_name=`readlink -f $0`
+script_path=`dirname $script_abs_name`
+
+# get nginx
+which nginx >/dev/null
+if [ $? -ne 0 ]
+then
+    echo "nginx not installed"
+    exit 1
+fi
+
+desc=cert-nginx
+prog=nginx
+pid_file=${script_path}/work/${desc}.pid
+work_dir=${script_path}/work/
+config_file=${script_path}/cert-nginx.conf
+args="-c ${config_file} -p $work_dir"
+wait_tick=0.1
+wait_tick_count=50
+
+usage()
+{
+    printf "usage: $script_name [start|stop|restart|status]\n"
+    exit 1
+}
+
+show_error()
+{
+    local message=$1
+    printf "\033[;31m%s\033[0m\n" "$message"
+}
+
+show_success()
+{
+    local message=$1
+    printf "\033[;32m%s\033[0m\n" "$message"
+}
+
+do_start()
+{
+    local i
+
+    printf "[starting $desc]"
+
+    pid=`cat $pid_file 2>/dev/null`
+    if [ $? -eq 0 ]
+    then
+        kill -0 $pid 2>/dev/null
+        if [ $? -eq 0 ]
+        then
+            show_error '[already started]'
+            return 1
+        fi
+    fi
+
+    $prog $args #2>/dev/null
+
+    for (( i = 0; i < $wait_tick_count; ++i ))
+    do
+        pid=`cat $pid_file 2>/dev/null`
+        if [ $? -eq 0 ]
+        then
+            kill -0 $pid 2>/dev/null
+            if [ $? -eq 0 ]
+            then
+                show_success '[success]'
+                return 0
+            fi
+        fi
+        sleep $wait_tick
+    done
+
+    show_error '[failed]'
+    return 1
+}
+
+do_stop()
+{
+    local i
+
+    printf "[stopping $desc]"
+
+    pid=`cat $pid_file 2>/dev/null`
+    if [ $? -ne 0 ]
+    then
+        show_error '[not started]'
+        return 1
+    fi
+
+    kill -0 $pid 2>/dev/null
+    if [ $? -ne 0 ]
+    then
+        show_error '[not started]'
+        return 1
+    fi
+
+    kill $pid
+
+    for (( i = 0; i < $wait_tick_count; ++i ))
+    do
+        kill -0 $pid 2>/dev/null
+        if [ $? -ne 0 ]
+        then
+            show_success '[success]'
+            return 0
+        fi
+        sleep $wait_tick
+    done
+
+    show_error '[failed]'
+    return 1
+}
+
+do_status()
+{
+    printf "[$desc]"
+
+    pid=`cat $pid_file 2>/dev/null`
+    if [ $? -ne 0 ]
+    then
+        show_error '[stopped]'
+        return 0
+    fi
+
+    kill -0 $pid 2>/dev/null
+    if [ $? -ne 0 ]
+    then
+        show_error '[stopped]'
+    else
+        show_success '[running]'
+    fi
+
+    return 0
+}
+
+if [ $# -ne 1 ]
+then
+    usage
+fi
+
+# check config file exist
+if [ ! -f $config_file ]
+then
+    echo "config file: $config_file not found"
+    exit 1
+fi
+
+case "$1" in
+    start)
+        do_start
+        ;;
+    stop)
+        do_stop
+        ;;
+    restart)
+        do_stop
+        do_start
+        ;;
+    status)
+        do_status
+        ;;
+    *)
+        usage
+        ;;
+esac
+
+exit 0
