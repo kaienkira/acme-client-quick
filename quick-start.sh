@@ -14,16 +14,16 @@ script_path=`dirname $script_abs_name`
 # get domain
 if [ ! -f ${script_path}/domain.txt ]
 then
-    echo "can not find domain.txt, please put your domain in domain.txt"
+    "error: can not find domain.txt, please put your domain in domain.txt"
     exit 1
 fi
 domain_list=`cat ${script_path}/domain.txt`
 
 # check 80 port
-exec 6<>/dev/tcp/localhost/80
+(echo >/dev/tcp/localhost/80) >/dev/null 2>&1
 if [ $? -eq 0 ]
 then
-    echo "80 port is in use, please shutdown your system nginx first"
+    echo "error: 80 port is in use, please shutdown your system nginx first"
     exit 1
 fi
 
@@ -57,13 +57,13 @@ mkdir -p ${script_path}/cert
 # generate account private key
 if [ ! -f ${script_path}/cert/account.key ]
 then
-    openssl genrsa -out ${script_path}/cert/account.key 4096
+    openssl genrsa -out ${script_path}/cert/account.key 4096 >/dev/null 2>&1
 fi
 
 # generate domain private key
 if [ ! -f ${script_path}/cert/ssl.key ]
 then
-    openssl genrsa -out ${script_path}/cert/ssl.key 2048
+    openssl genrsa -out ${script_path}/cert/ssl.key 2048 >/dev/null 2>&1
 fi
 
 # generate csr from domain private key
@@ -94,6 +94,7 @@ do_cleanup() {
 trap do_cleanup EXIT
 
 # get cert
+echo "[getting cert from Let's Encrypt][may be serveral minutes]"
 for domain in $domain_list
 do
     domain_param="$domain_param""$domain;"
