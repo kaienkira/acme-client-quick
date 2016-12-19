@@ -14,7 +14,7 @@ script_path=`dirname $script_abs_name`
 # get domain
 if [ ! -f ${script_path}/domain.txt ]
 then
-    "error: can not find domain.txt, please put your domain in domain.txt"
+    echo "error: can not find domain.txt, please put your domain in domain.txt"
     exit 1
 fi
 domain_list=`cat ${script_path}/domain.txt`
