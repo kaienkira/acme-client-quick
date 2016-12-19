@@ -96,8 +96,7 @@ function getThumbPrint($key)
 
 function signMessage($key, $message)
 {
-    if (openssl_sign($message, $sign, $key,
-            OPENSSL_ALGO_SHA256) === false) {
+    if (openssl_sign($message, $sign, $key, 'sha256') === false) {
         return false;
     }
 
