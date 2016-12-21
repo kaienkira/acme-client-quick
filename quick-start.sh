@@ -98,8 +98,9 @@ echo "[getting cert from Let's Encrypt][may be serveral minutes]"
 for domain in $domain_list
 do
     domain_param="$domain_param""$domain;"
-    domain_param=`printf "$domain_param" | sed 's/;$//g'`
 done
+domain_param=`printf "$domain_param" | sed 's/;$//g'`
+
 php ${script_path}/acme-client.php \
     -a ${script_path}/cert/account.key \
     -r ${script_path}/cert/domain.csr \
