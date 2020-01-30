@@ -151,7 +151,7 @@ function getReplayNonce()
         return false;
     }
 
-    preg_match('/^Replay-Nonce: (.*?)\r\n/sm', $ret['header'], $matches);
+    preg_match('/^replay-nonce: (.*?)\r\n/sm', $ret['header'], $matches);
     if (!isset($matches[1])) {
         echo "curl failed: replay nonce header is missing\n";
         return false;
@@ -336,7 +336,7 @@ function issueCert($key, $csr, $output_cert_file)
     $cert = base64_encode($ret['response']);
 
     // get intermediate cert
-    preg_match('/^Link: <(.*?)>;rel="up"\r\n/sm', $ret['header'], $matches);
+    preg_match('/^link: <(.*?)>;rel="up"\r\n/sm', $ret['header'], $matches);
     if (!isset($matches[1])) {
         echo "acme/new-cert failed: can not get intermediate cert url\n";
         return false;
