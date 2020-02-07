@@ -1,6 +1,8 @@
 # acme-client-quick
-Get Let's Encrypt Cert In Five Minutes
+Get Let's Encrypt Cert In Five Minutes (Deprecated)
 
+* ACME v1 is deprecated,
+  Please Use https://github.com/kaienkira/acme-v2-client-quick instead
 * It's a Quick and Dirty method, For security and detail guide please READ
   https://github.com/kaienkira/acme-client
 * Tested only in Ubuntu and CentOS
