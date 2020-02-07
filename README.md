@@ -1,4 +1,4 @@
-# acme-client-quick
+# acme-client-quick (Deprecated)
 Get Let's Encrypt Cert In Five Minutes (Deprecated)
 
 * ACME v1 is deprecated,
